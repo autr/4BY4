@@ -16,11 +16,15 @@
 
 // for SPI 1.8" TFT
 
-#define TFT_CS_PIN 10
-#define TFT_RST_PIN 8
-#define TFT_DC_PIN 9 // UNO = PWM
-#define TFT_MOSI_PIN 11  // UNO = MOSI
-#define TFT_SCLK_PIN 13  // UNO = SCK
+// ~ LED
+#define TFT_SCK_PIN 1  // [SCK] + Clock = Teensy2.0:1, Uno:13
+#define TFT_MOSI_PIN 2  // [SDA] + MOSI + Data Output = Teensy2.0:2, Uno:11
+#define TFT_DC_PIN 9 // [A0] = DC = EDITABLE ~ must be PWM
+#define TFT_RST_PIN 10 // [RESET] = EDITABLE
+#define TFT_CS_PIN 0 // [CS/SS/NSS] = Select = Teensy2.0:0, Uno:10
+// ~ GND
+// ~ VCC
+
 
 // for reference
 
@@ -30,9 +34,10 @@
 
 /* -------------- GLOBAL OBJECTS -------------- */
 
-int lookup[128]
-Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS_PIN, TFT_DC_PIN, TFT_MOSI_PIN, TFT_SCLK_PIN, TFT_RST_PIN);
-MUX74HC4067 mux(MUX_EN_PIN, MUX_S0_PIN, MUX_S1_PIN, MUX_S2_PIn, MUX_S3_PIN);
+int lookup[128];
+int timestamps[128];
+Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS_PIN, TFT_DC_PIN, TFT_MOSI_PIN, TFT_SCK_PIN, TFT_RST_PIN);
+// MUX74HC4067 mux(MUX_EN_PIN, MUX_S0_PIN, MUX_S1_PIN, MUX_S2_PIN, MUX_S3_PIN);
 
 /* -------------- HELPER FUNCTIONS -------------- */
 
@@ -40,14 +45,14 @@ word colour( byte R, byte G, byte B){
   return ( ((R & 0xF8) << 8) | ((G & 0xFC) << 3) | (B >> 3) );
 }
 
-void drawText(char *text, int xx, int yy, uint16_t color = ST77XX_WHITE) {
+void drawText(char *text, int xx, int yy, uint16_t color = ST7735_WHITE) {
   tft.setCursor(xx, yy);
   tft.setTextColor(color);
   tft.setTextWrap(true);
   tft.print(text);
 }
 
-void drawText( String & str, int xx, int yy, uint16_t color = ST77XX_WHITE ) {
+void drawText( String & str, int xx, int yy, uint16_t color = ST7735_WHITE ) {
   char copy[50];
   str.toCharArray(copy, 50);
   drawText(copy, xx,yy, color);
@@ -63,12 +68,13 @@ void setup() {
   Serial.begin(9600);
   Serial.print(F("setup"));
 
-  for(int i = 0; i < sizeof(lookup); ++i) array[i] = 0;
-  mux.signalPin(MUX_SIG_PIN, INPUT, ANALOG);
+  for(int i = 0; i < sizeof(lookup); ++i) lookup[i] = 0;
   
   tft.initR(INITR_BLACKTAB);
-  tft.fillScreen(ST77XX_BLACK);
+  tft.fillScreen(ST7735_BLACK);
   tft.setRotation(3);
+  
+//  mux.signalPin(MUX_SIG_PIN, INPUT, ANALOG);
 }
 
 /* -------------- LOOP -------------- */
