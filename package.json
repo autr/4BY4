@@ -1,0 +1,25 @@
+{
+  "name": "mnidimonic",
+  "version": "1.0.0",
+  "description": "Prototype MIDI Device",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/autr/mnidimonic.git"
+  },
+  "author": "Autr",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/autr/mnidimonic/issues"
+  },
+  "homepage": "https://github.com/autr/mnidimonic#readme",
+  "dependencies": {
+    "@serialport/parser-readline": "^9.2.4",
+    "serialport": "^9.2.5"
+  }
+}
