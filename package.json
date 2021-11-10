@@ -5,8 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "compile": "./compile.sh",
+    "dev": "nodemon --watch ./ lockd.ino --exec ./compile.sh",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,9 @@
   "homepage": "https://github.com/autr/mnidimonic#readme",
   "dependencies": {
     "@serialport/parser-readline": "^9.2.4",
+    "node-osc": "^6.1.11",
+    "osc": "^2.4.2",
+    "osc-js": "^2.1.2",
     "serialport": "^9.2.5"
   }
 }
