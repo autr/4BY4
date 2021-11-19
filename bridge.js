@@ -1,20 +1,20 @@
 import serialport from 'serialport'
 import readline from '@serialport/parser-readline'
 import { Client } from 'node-osc'
+import { config } from 'dotenv'
 let _PORT
 
 
 let OSC = {}
+let ENV = config({path: 'config.env'}).parsed
 
 
-async function create( localAddress, localPort ) {
+async function createOSC(  ) {
 
     return new Promise( (resolve,reject) => {
-        if (!localAddress) localAddress = "0.0.0.0"
-        if (!localPort) localPort = 4444
-        let key = localAddress + ':' + localPort
+        let key = ENV.OSC_ADDRESS + ':' + ENV.OSC_PORT
         if (!OSC[key]) {
-            OSC[key] = new Client(localAddress,localPort)
+            OSC[key] = new Client(ENV.OSC_ADDRESS,ENV.OSC_PORT)
             resolve( OSC[key] )
         } else {
             console.log(`[lockd] ${key} already exists!`)
@@ -25,13 +25,25 @@ async function create( localAddress, localPort ) {
 }
 
 const run = async e => {
+
+    ENV.MODE = ENV.MODE || 'OSC'
+    ENV.OSC_ADDRESS = ENV.OSC_ADDRESS || '0.0.0.0'
+    ENV.OSC_PORT = ENV.OSC_PORT || 4444
+    ENV.MODE = ENV.MODE || 'OSC'
+
+    console.log(`[lockd] ✅  opened`)
+
+
     let list = await serialport.list()
     let arduino = list.find( t => (t?.manufacturer||'').toLowerCase().indexOf( 'arduino' ) != -1 )
 
-    await create()
 
-    if (!arduino) throw 'no arduino found'
-    _PORT = new serialport(arduino.path)
+    if (!arduino || !ENV.BOARD_PORT) return console.log(`[lockd] ❌  no BOARD_PORT or default Arduino found`)
+
+    
+
+    await createOSC()
+    _PORT = new serialport( ENV.BOARD_PORT || arduino.path)
 
     _PORT.on('open', onOpen)
     _PORT.on('close', onClose)

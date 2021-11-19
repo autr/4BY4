@@ -6,8 +6,9 @@
   "type": "module",
   "scripts": {
     "compile": "./compile.sh",
-    "dev": "nodemon --watch ./ lockd.ino --exec ./compile.sh",
-    "start": "node index.js"
+    "dev-both": "nodemon --watch ./ lockd.ino --exec ./compile.sh",
+    "dev": "nodemon bridge.js",
+    "start": "node bridge.js"
   },
   "repository": {
     "type": "git",
@@ -21,9 +22,11 @@
   "homepage": "https://github.com/autr/mnidimonic#readme",
   "dependencies": {
     "@serialport/parser-readline": "^9.2.4",
+    "dotenv": "^10.0.0",
     "node-osc": "^6.1.11",
     "osc": "^2.4.2",
     "osc-js": "^2.1.2",
-    "serialport": "^9.2.5"
+    "serialport": "^9.2.5",
+    "terminal-kit": "^2.1.8"
   }
 }

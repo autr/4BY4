@@ -1,3 +1,3 @@
-arduino-cli compile --fqbn arduino:avr:uno lockd.ino 
-arduino-cli upload -p /dev/cu.usbmodem1D131 --fqbn arduino:avr:uno lockd.ino 
-pnpm run start
+source ./CONFIG.env
+arduino-cli compile --fqbn $BOARD_TYPE 4BY4.ino 
+arduino-cli upload -p $BOARD_PORT --fqbn $BOARD_TYPE 4BY4.ino
