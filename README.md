@@ -4,37 +4,55 @@
 
 **Pots vs Encoders**
 
-The design can be thought of as a low-cost alternative to using rotary encoders, such as on controllers like the MIDI Fighter Twister. Rotary encoders have the benefit of no fixed start or end point, but the downside of having less fidelity than potentiometers (unless very expensive), as well as lacking the tactile feel of an analogue potentiometer. A single rotary encoder is used in the prototype for switching between pages, but could also be replaced by push buttons, a touchscreen etc.
+The design can be thought of as a low-cost alternative to using rotary encoders, such as on controllers like the [MIDI Fighter Twister](https://www.midifighter.com/#Twister). Rotary encoders have the benefit of no fixed start or end point, but the downside of having less fidelity than potentiometers (unless very expensive), as well as lacking the tactile feel of an analogue potentiometer. A single rotary encoder is used in the prototype for switching between pages, but could also be replaced by push buttons, a touchscreen etc.
 
 **Sending Messages**
 
-When connected via USB, the 4BY4 doesn't immediately send MIDI / OSC / WebSockets, and insteads sends serial messages directly over USB from the device, with 1024 points of fidelity. The ([bridge.js](bridge.js)) script will forward those messages onto MIDI, OSC or WebSockets. It's possible to load MIDI firmware onto the Arduino and skip this process, but will mean 128 points of fidelity only.
+When connected via USB, the 4BY4 doesn't immediately send MIDI / OSC / WebSockets, and insteads sends serial messages directly over USB from the device, with 1024 points of fidelity. The [bridge.js](bridge.js) script will forward those messages onto MIDI, OSC or WebSockets. It's possible to load MIDI firmware onto the Arduino - or use a [Teensy](https://www.pjrc.com/teensy/) - and skip this process, but will mean 128 points of fidelity only.
 
 **Open Source**
 
-Everything here is open sourced under MIT, circa August 2021. Currently there's nothing like this "on the market", so I'm getting this out there before anyone can dib it. 
+Everything here is open sourced under MIT, circa August 2021. Currently there's nothing like this "on the market", so I'm getting this out first, with some DIY boards planned.
 
 # Parts
 
-* 16 x 1K potentiometers
-* 1 x MUX74HC4067
-* 1 x 1.8" TFT
-* 1 x rotary encoder
-* 1 x Arduino Uno
+The prototype was built with spare parts I had floating around in boxes, many from Arduino starter kits (ie. Uno + TFT + rotary encoder):
+
+* **16 x 1K Linear Potentiometers** - make sure to get *linear* instead of logarithmic potentiometers
+* **1 x [MUX74HC4067](https://www.sparkfun.com/products/9056)** - chip for multiplexing 16 unique inputs into a reduced number of pins
+* **1 x [1.8" TFT](https://www.adafruit.com/product/358)** - standard low cost TFT, drawn to via SPI ([Serial Peripheral Interface](https://learn.sparkfun.com/tutorials/serial-peripheral-interface-spi/all))
+* **1 x [Rotary encoder](https://www.hobbyelectronica.nl/product/rotary-encoder-module/)** - standard low cost encoder, PPA ([Pulses Per Rotation](https://www.cuidevices.com/blog/what-is-encoder-ppr-cpr-and-lpr)) relates to the amount of clicks in a 360 degree rotation
+* **1 x [Arduino Uno](https://store.arduino.cc/products/arduino-uno-rev3)** - or equivalent
 
 # Usage
 
-**Configuration**
+**Prerequisites**
 
-Configuration for CLI compiler and bridge script is handled by [config.env](config.env) like so:
+* [Node](https://nodejs.org/en/download/package-manager/) and [pnpm](https://pnpm.io/) - pnpm is interchangeable with npm or [yarn](https://yarnpkg.com/)
+* [Arduino IDE](https://www.arduino.cc/en/software/) or [CLI](https://github.com/arduino/arduino-cli)
+
+**Arduino**
+
+[4BY4.ino](4BY4.ino) can be opened in the Arduino IDE and uploaded there, or if you have [arduino-cli](https://github.com/arduino/arduino-cli) installed run it with `./compile.sh`, after making sure to set `BOARD_TYPE` and `BOARD_PORT` in [config.env](config.env):
 
 ```
 BOARD_TYPE=arduino:avr:uno
-# use arduino-cli board list to find BOARD_TYPE
+# use "arduino-cli board list" to find BOARD_TYPE
 
 BOARD_PORT=/dev/cu.usbmodem1D131
-# use ls /dev/tty* to find BOARD_PORT
+# use "ls /dev/tty*"" to find BOARD_PORT
+```
 
+**Bridge**
+
+```
+pnpm i 
+pnpm start
+```
+
+Once the sketch is uploaded to the Arduino, you can run the bridge script which will forward serial messages into MIDI, OSC or WebSockets. This is done with `pnpm start`. To configure OSC, make sure to set `OSC_ADDRESS` and `OSC_PORT` in [config.env](config.env):
+
+```
 OSC_ADDRESS=0.0.0.0
 # the IP of the computer your OSC messages will be sent to
 # 0.0.0.0 is localhost
@@ -42,13 +60,7 @@ OSC_ADDRESS=0.0.0.0
 OSC_PORT=4444
 ```
 
-**Arduino**
-
-[4BY4.ino](4BY4.ino) can be opened in the Arduino IDE and uploaded, or if you have [arduino-cli](https://github.com/arduino/arduino-cli) installed run it with `./compile.sh` (after making sure to set `BOARD` and `PORT` have been set correctly in ENV).
-
-**Bridge**
-
-Once it is uploaded to the Arduino, you then run the bridge script which will forward serial messages into MIDI, OSC or WebSockets. This is done with `pnpm start`.
+Check [package.json](package.json) for a list of scripts which can be run.
 
 # Wiring
 
@@ -57,9 +69,9 @@ Once it is uploaded to the Arduino, you then run the bridge script which will fo
 POTENTIOMETERS x16 (1K)
 =======================
 
-MIDDLE PINS = MULTIPLEXER C0-C15
-LEFT PINS = 5V
-RIGHT PINS = GND
+MIDDLE PINS = Multiplexer C0-C15
+LEFT PINS = 5V zig-zagged
+RIGHT PINS = GND zig-zagged
 
 =========================
 MULTIPLEXER (MUX74HC4067)
@@ -87,15 +99,28 @@ RST/RESET = Arduino RESET
 ROTARY ENCODER
 ==============
 
-CLK = D12
-DT = 8
+CLK = Arduino D12
+DT = Arduino D8
 SW = N/A
-
 ```
 
-# Future
+# TODO
 
 * make a KiCad design with through-hole potentiometers
 * use better quality potentiometers, and correct resistor values
-* switch MIDI / OSC / WebSockets script into micro-gui panel
+* switch MIDI / OSC / WebSockets script into GUI panel
 
+# Misc
+
+Some resources I found helpful while building this:
+
+* [Aduino Uno Layout](arduino.jpeg)
+* [MIDI firmware for Uno](arduino.jpeg)
+* [Teensy SPI Pinout](arduino.jpeg)
+* [Teensy Pinout - All](https://www.pjrc.com/teensy/pinout.html)
+* [1.8" TFT Tutorial](https://randomnerdtutorials.com/guide-to-1-8-tft-display-with-arduino)
+* [1.8" TFT Tutorial - Adafruit](https://learn.adafruit.com/1-8-tft-display/breakout-wiring-and-test)
+
+# License
+
+MIT
