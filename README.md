@@ -1,6 +1,12 @@
 # 4BY4
 
-4BY4 is a prototype MIDI / OSC / WebSockets controller. It does one key thing differently to other controllers: when changing between "pages" of assignments, values are locked (ie. do not send) until the position of the knob returns or passes the previously recorded position. This is so that assignments don't "jump" when you go to tweak them. To indicate this, an LCD is used to display the locked value alongside the knob position, and is highlighted in red until the knob position passes the locked value. 
+![4BY4](photo.jpg)
+
+4BY4 is a prototype MIDI / OSC / WebSockets controller. It does one key thing differently to other controllers: when changing between "pages" of assignments, values are locked ( ie. do not send ) until the position of the knob returns or passes the previously recorded position. This is so that assignments don't "jump" when you go to tweak them. 
+
+**Visual Feedback**
+
+To indicate the state of the knob ( *locked or unlocked* ), an LCD is used to display the original value alongside the current knob position, and is highlighted in red until the knob position passes it. 
 
 **Pots vs Encoders**
 
@@ -8,7 +14,7 @@ The design can be thought of as a low-cost alternative to using rotary encoders,
 
 **Sending Messages**
 
-When connected via USB, the 4BY4 doesn't immediately send MIDI / OSC / WebSockets, and insteads sends serial messages directly over USB from the device, with 1024 points of fidelity. The [bridge.js](bridge.js) script will forward those messages onto MIDI, OSC or WebSockets. It's possible to load MIDI firmware onto the Arduino - or use a [Teensy](https://www.pjrc.com/teensy/) - and skip this process, but will mean 128 points of fidelity only.
+When connected via USB, the 4BY4 doesn't immediately send MIDI / OSC / WebSockets, and insteads sends serial messages directly over USB from the device, with 10bit / 1024 points of fidelity. The [bridge.js](bridge.js) script will forward those messages onto MIDI, OSC or WebSockets. It's possible to load MIDI firmware onto the Arduino - or use a [Teensy](https://www.pjrc.com/teensy/) - and skip this process, but will reduce the amount of fidelity to MIDI 7bit / 128 points.
 
 **Open Source**
 
