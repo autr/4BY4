@@ -16,10 +16,6 @@ The design can be thought of as a low-cost alternative to using rotary encoders,
 
 When connected via USB, the 4BY4 doesn't immediately send MIDI / OSC / WebSockets, and insteads sends serial messages directly over USB from the device, with 10bit / 1024 points of fidelity. The [bridge.js](bridge.js) script will forward those messages onto MIDI, OSC or WebSockets. It's possible to load MIDI firmware onto the Arduino - or use a [Teensy](https://www.pjrc.com/teensy/) - and skip this process, but will reduce the amount of fidelity to MIDI 7bit / 128 points.
 
-**Open Source**
-
-Everything here is open sourced under MIT, circa August 2021. Currently there's nothing like this "on the market", so I'm getting this out first, with some DIY boards planned.
-
 # Parts
 
 The prototype was built with spare parts I had floating around in boxes, many from Arduino starter kits (ie. Uno + TFT + rotary encoder):
